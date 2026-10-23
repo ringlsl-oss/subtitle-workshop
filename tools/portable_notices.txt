@@ -1,0 +1,39 @@
+Third-party components bundled in Subtitle Workshop 1.0.3
+
+The original third-party licenses remain applicable. Their ownership is not transferred.
+Recognition package versions are listed in 组件清单.json.
+Recognition package license files remain in _internal/runtime/python/Lib/site-packages/*dist-info/.
+GUI dependency license copies are in licenses/.
+
+Python 3.12.10 (PSF): _internal/runtime/python/LICENSE.txt
+https://www.python.org/downloads/release/python-31210/
+https://docs.python.org/3.12/using/windows.html#the-embeddable-package
+
+OpenAI Whisper code and model weights (MIT):
+https://github.com/openai/whisper
+
+PyTorch (BSD-style and bundled third-party licenses), NumPy (BSD),
+Numba / llvmlite (BSD), tiktoken (MIT), and their dependencies:
+See their retained dist-info license files and metadata.
+
+Microsoft WebView2 Fixed Version Runtime 156.0.4314.42, x64:
+Distributed under Microsoft's WebView2 runtime terms. All original runtime files retained.
+https://developer.microsoft.com/en-us/microsoft-edge/webview2/
+https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution
+This fixed runtime is not automatically updated. Future software releases should refresh it.
+
+Microsoft Visual C++ runtime app-local DLLs: Microsoft redistribution terms apply.
+https://learn.microsoft.com/en-us/cpp/windows/redistributing-visual-cpp-files
+
+FFmpeg 4.0.2 with GPL / version3 build options, libx264 and other linked libraries:
+https://ffmpeg.org/legal.html
+https://ffmpeg.org/releases/ffmpeg-4.0.2.tar.xz
+Binary build configuration is recorded in licenses/ffmpeg-build.txt.
+
+Flask, Werkzeug, Jinja2, MarkupSafe, Click, Blinker, ItsDangerous, pywebview,
+pythonnet, clr-loader, CFFI, PyAV, jieba and OpenCC:
+Original license notices are retained where provided by their distributions.
+
+The portable app makes no changes to installed Python or system PATH.
+Windows 10 may need read/execute permissions for AppContainer on the bundled
+WebView2 directory; the app applies Microsoft's documented folder permission command.

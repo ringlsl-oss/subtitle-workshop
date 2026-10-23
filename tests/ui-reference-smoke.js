@@ -1,0 +1,37 @@
+async page => {
+  await page.setViewportSize({width:1440,height:1000});
+  await page.getByRole('button',{name:'导入文稿',exact:true}).click();
+  await page.getByRole('textbox',{name:'文件路径',exact:true}).fill('output/reference.docx');
+  await page.getByRole('button',{name:'确定',exact:true}).click();
+  await page.getByText('reference.docx',{exact:true}).waitFor();
+  await page.getByRole('button',{name:'对照当前字幕',exact:true}).click();
+  await page.getByRole('heading',{name:'文稿与语音核对',exact:true}).waitFor();
+  const choice=page.getByRole('checkbox',{name:'采用这条文稿文字，保留原时间',exact:true});
+  if(await choice.isChecked())throw new Error('Changes must require an explicit choice');
+  await page.screenshot({path:'output/playwright/reference-review.png',fullPage:true});
+  await choice.check();
+  await page.getByRole('button',{name:'采用勾选项',exact:true}).click();
+  await page.getByText('已采用 1 条文稿文字，时间轴保留，可撤销。',{exact:true}).waitFor();
+  const cue=page.getByRole('textbox',{name:'第1条字幕',exact:true});
+  if(await cue.inputValue()!=='欢迎来到示例中学')throw new Error('Document correction not applied');
+  if(await page.getByRole('spinbutton',{name:'第1条开始秒数',exact:true}).inputValue()!=='0.000')throw new Error('Start moved');
+  if(await page.getByRole('spinbutton',{name:'第1条结束秒数',exact:true}).inputValue()!=='2.000')throw new Error('End moved');
+  await page.getByRole('button',{name:'↶ 撤销',exact:true}).click();
+  if(await cue.inputValue()!=='欢迎来到示列中学')throw new Error('Undo failed');
+  await page.getByRole('button',{name:'查看核对结果',exact:true}).click();
+  await page.getByRole('button',{name:'取消',exact:true}).click();
+  await page.getByText('已自动保存',{exact:true}).waitFor();
+  await page.reload();
+  await page.getByText('reference.docx',{exact:true}).waitFor();
+  await page.getByRole('button',{name:'查看核对结果',exact:true}).click();
+  await page.getByRole('button',{name:'取消',exact:true}).click();
+  await page.getByRole('button',{name:'查看 / 编辑文稿',exact:true}).click();
+  await page.getByRole('textbox',{name:'文稿正文',exact:true}).fill('完全不同的解说词，苹果香蕉西瓜芒果');
+  await page.getByRole('button',{name:'保存文稿',exact:true}).click();
+  await page.getByRole('button',{name:'对照当前字幕',exact:true}).click();
+  await page.getByText(/两份文字匹配度较低/).waitFor();
+  if(await page.locator('[data-reference-change]').count())throw new Error('Unrelated reference must not be applicable');
+  await page.getByRole('button',{name:'关闭',exact:true}).last().click();
+  await page.screenshot({path:'output/playwright/reference-editor.png',fullPage:true});
+  console.log('REFERENCE_UI_OK: DOCX import, explicit choice, apply, timestamps, undo, persisted document and report, unrelated text guard');
+}

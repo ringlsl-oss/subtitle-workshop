@@ -1,0 +1,1 @@
+Built-in imagegen. Brief: one Windows desktop icon for Subtitle Workshop; dark forest-green rounded tile, pale lime video frame, play triangle and two subtitle bars; generous negative space, bold geometric shapes, restrained depth, transparent outside corners, no text or extra badges. PNG master converted to an ICO with 16/20/24/32/48/64/128/256 px sizes.

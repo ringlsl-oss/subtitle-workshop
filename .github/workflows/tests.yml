@@ -1,0 +1,28 @@
+name: Windows tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt -r requirements-dev.txt
+      - name: Install FFmpeg for export integration test
+        run: choco install ffmpeg -y --no-progress
+      - name: Python tests
+        run: python -m pytest -q
+      - name: JavaScript syntax
+        run: |
+          node --check web/app.js
+          node --check web/clarity.js
+          node --check web/reference.js

@@ -1,0 +1,38 @@
+async page => {
+  await page.setViewportSize({width:1440,height:1000});
+  await page.getByRole('button',{name:'◈ 断句习惯',exact:true}).click();
+  await page.getByText('当前“宣传片”还没有学习样本。',{exact:true}).waitFor();
+  await page.getByRole('button',{name:'使用“默认习惯”（3 条）',exact:true}).click();
+  await page.getByText('“默认习惯”已学习 1 个作品、3 条字幕。',{exact:true}).waitFor();
+  await page.getByRole('button',{name:'查看学到的断句',exact:true}).click();
+  await page.getByRole('button',{name:'知道了',exact:true}).click();
+  await page.getByRole('button',{name:'预览并应用',exact:true}).click();
+  await page.getByRole('heading',{name:'应用前 · 1 条',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'应用后 · 3 条',exact:true}).waitFor();
+  await page.screenshot({path:'output/playwright/clarity-comparison.png',fullPage:true});
+  await page.getByRole('button',{name:'应用到当前字幕',exact:true}).click();
+  const first=page.getByRole('textbox',{name:'第1条字幕',exact:true});
+  if(await first.inputValue()!=='我们一起出发')throw new Error('learned split not applied');
+  await page.getByRole('button',{name:'◈ 断句习惯',exact:true}).click();
+  await page.getByRole('spinbutton',{name:'常用字数',exact:true}).fill('5');
+  await page.getByText('有未保存修改，尚未生效',{exact:true}).waitFor();
+  await page.getByRole('button',{name:'保存规则',exact:true}).click();
+  await page.getByText(/保存成功 ·/).waitFor();
+  await page.screenshot({path:'output/playwright/clarity-memory.png',fullPage:true});
+  await page.getByRole('button',{name:'导出 ↗',exact:true}).click();
+  await page.getByRole('combobox',{name:'导出格式',exact:true}).selectOption('srt');
+  await page.getByRole('button',{name:'选择保存位置',exact:true}).click();
+  await page.getByRole('textbox',{name:'文件路径',exact:true}).fill('output/clarity-result.srt');
+  await page.getByRole('button',{name:'确定',exact:true}).click();
+  await page.getByRole('button',{name:'查看保存内容',exact:true}).click();
+  await page.getByRole('heading',{name:'查看保存结果',exact:true}).waitFor();
+  const content=await page.locator('dialog pre').textContent();
+  if(!content.includes('我们一起出发'))throw new Error('export preview missing text');
+  await page.getByRole('button',{name:'关闭',exact:true}).last().click();
+  await page.getByText('已自动保存',{exact:true}).waitFor();
+  await page.reload();
+  await page.getByRole('button',{name:'↗ 保存与导出',exact:true}).click();
+  await page.getByRole('heading',{name:'clarity-result.srt',exact:true}).waitFor();
+  await page.screenshot({path:'output/playwright/clarity-outputs.png',fullPage:true});
+  console.log('CLARITY_UI_OK: empty-profile warning, saved samples, actual learned split, comparison, rule save status, export preview, persisted history');
+}

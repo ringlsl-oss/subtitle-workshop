@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="app-token" content="__APP_TOKEN__"><title>字幕工坊</title><link rel="icon" href="/assets/app-icon.ico"><link rel="stylesheet" href="/assets/style.css"></head>
+<body>
+<header class="topbar">
+  <div class="brand"><img class="brand-mark" src="/assets/app-icon.png" alt="" width="48" height="48"><strong>字幕工坊</strong><span class="version">V1.0.3 · 本地版</span></div>
+  <div class="project-title"><input id="projectName" aria-label="项目名称" value="未命名项目"><span id="saveStatus">自动保存就绪</span></div>
+  <div class="top-actions"><button id="newProject">新建</button><button id="openProject">打开项目</button><button id="saveProject">另存项目</button><button class="primary" id="exportButton">导出 <span>↗</span></button></div>
+</header>
+<div class="shell">
+  <nav class="rail" aria-label="主要导航"><button class="nav-item active" data-page="editor"><span>▤</span>字幕编辑</button><button class="nav-item" data-page="memory"><span>◈</span>断句习惯</button><button class="nav-item" data-page="outputs"><span>↗</span>保存与导出</button><div class="rail-bottom"><i></i>本地处理</div></nav>
+  <main>
+    <section id="editorPage" class="page editor-page">
+      <div class="workspace-toolbar"><div class="section-label">编辑工作台 <span id="mediaInfo">尚未导入素材</span></div><div class="toolbar-actions"><button id="importMedia">＋ 导入视频 / 音频</button><button id="importSubs">导入字幕</button><button id="importDocument">导入文稿</button><button class="accent" id="recognize">自动识别</button></div></div>
+      <section class="reference-panel" aria-label="文稿核对"><div class="reference-info"><strong id="referenceName">文稿与语音交叉核对</strong><p id="referenceStatus"></p></div><div class="reference-actions"><button id="editDocument">粘贴文稿</button><button id="compareDocument" class="accent">对照当前字幕</button><button id="viewDocumentReview" hidden>查看核对结果</button><button id="removeDocument" class="text-button" hidden>移除文稿</button></div></section>
+      <div class="workspace">
+        <div class="preview-column">
+          <div id="stage" class="stage">
+            <video id="video" preload="metadata"></video>
+            <div id="emptyStage" class="empty-stage"><div class="frame-icon">CC</div><h1>从一段视频开始</h1><p>导入素材，识别语音，再按你的习惯断句。</p><button id="emptyImport" class="primary">选择视频或音频</button><button id="demoButton" class="text-button">先体验字幕编辑 →</button><small>MP4 · MOV · MKV · WAV · MP3</small></div>
+            <div id="audioStage" class="audio-stage" hidden><span>♫</span><p>音频预览</p></div>
+            <div id="subtitleOverlay" class="subtitle-overlay"></div>
+            <button id="compatPreview" hidden>无法播放？生成兼容预览</button>
+          </div>
+          <div class="transport"><button id="play" aria-label="播放或暂停">▶</button><span id="timeLabel">00:00.00 / 00:00.00</span><input id="seek" type="range" min="0" max="100" value="0" step="0.01" aria-label="播放进度"><select id="speed" aria-label="播放速度"><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></div>
+          <div class="style-panel"><div class="panel-heading"><h2>字幕样式</h2><select id="stylePreset" aria-label="样式预设"><option value="classic">经典白字</option><option value="film">电影字幕</option><option value="label">黑底字幕</option><option value="custom">自定义</option></select><button id="saveStyle" class="text-button">保存预设</button></div>
+            <div class="style-grid">
+              <label class="wide">字体<select id="font"><option>Microsoft YaHei</option><option>SimHei</option><option>SimSun</option><option>Arial</option></select></label>
+              <label>字号<input id="size" type="number" min="8" max="200" value="48"></label><label>颜色<input id="color" type="color" value="#f5f5f2"></label>
+              <label>描边<input id="outline" type="number" min="0" max="10" value="2"></label><label>阴影<input id="shadow" type="number" min="0" max="10" value="1"></label>
+              <label>位置<select id="position"><option value="bottom">底部居中</option><option value="center">画面中央</option><option value="top">顶部居中</option></select></label><label>边距<input id="margin" type="number" min="0" max="1000" value="60"></label>
+            </div><label class="check"><input id="background" type="checkbox">半透明背景</label><p class="hint">字号与边距按原视频像素设置；预览随画面等比缩放。</p>
+          </div>
+        </div>
+        <div class="subtitle-column"><div class="panel-heading"><h2>字幕校对 <span id="cueCount">0 条</span></h2><button id="undo" title="撤销（Ctrl+Z）">↶ 撤销</button><button id="redo" title="重做（Ctrl+Shift+Z）">↷</button></div>
+          <div class="segment-toolbar"><select id="profileSelect" aria-label="断句习惯"></select><button id="applyProfile">预览并应用断句</button></div>
+          <div id="activeProfileStatus" class="profile-status"></div><button id="viewComparison" class="text-button compare-link">查看上次断句对比</button>
+          <div class="find-toolbar"><input id="find" placeholder="查找文字" aria-label="查找文字"><input id="replace" placeholder="替换为" aria-label="替换为"><button id="replaceAll">全部替换</button></div>
+          <div id="cueList" class="cue-list"><div class="empty-list"><span>01</span><h3>字幕会出现在这里</h3><p>自动识别语音，或导入已有 SRT / ASS。</p><p>校对完成后，可将成稿加入断句习惯。</p></div></div>
+          <div class="edit-actions"><button id="addCue">＋ 新增</button><button id="splitCue" title="在文字光标处拆成两条字幕">拆分</button><button id="mergeCue">合并下一条</button><button id="deleteCue">删除</button><button id="shiftCue">整体偏移</button><button id="simplifyCues" title="将全部字幕转为简体，保留时间与断句，可撤销">繁转简</button></div>
+          <div class="confirm-strip"><span>只学习你确认的成稿</span><button id="learnCurrent" class="text-button">确认并记住断句 →</button></div>
+        </div>
+      </div>
+      <div class="timeline-panel"><div class="timeline-heading"><span>字幕时间轴</span><span id="timelineHint">点击字幕块定位 · 空格播放 / 暂停</span></div><div id="timeline" class="timeline"><div id="timelineCues"></div><div id="playhead"></div></div></div>
+    </section>
+    <section id="memoryPage" class="page memory-page" hidden>
+      <div class="memory-heading"><div><h1>断句习惯</h1><p>① 选择习惯　② 导入成稿并检查规则　③ 预览并应用</p></div><button id="newProfile">＋ 新建空白习惯</button></div>
+      <div id="profileOverview" class="profile-overview"></div>
+      <div id="learningNotice" class="learning-notice"></div>
+      <div class="memory-layout"><div class="memory-main"><div class="panel-heading"><h2>学习素材</h2><select id="memoryProfileSelect" aria-label="管理断句习惯"></select></div>
+        <div class="learn-zone"><div><h2>为这套习惯添加成稿</h2><p>SRT / ASS 字幕文件，支持多选。重复样本不重复计数。</p></div><button id="learnFiles" class="primary">导入历史字幕</button></div>
+        <div id="memoryStats" class="memory-stats"></div><div class="panel-heading"><h2>已记住的作品</h2><button id="forgetProfile" class="text-button danger">清空这套习惯</button></div><div id="sampleList" class="sample-list"></div>
+        <div class="memory-note"><strong>这份记忆如何工作</strong><p>分别统计每条字幕的长度、画面换行和标点习惯；相同文字优先复用历史断点，新文字结合分词与保护词切分。它不会自动学习未确认的编辑。</p><p>新作品仍需校对。只有字幕时间轴的样本会按字数估算新断点；自动识别结果优先使用词级时间戳。</p></div>
+      </div><aside class="rules-panel"><div class="panel-heading"><h2>规则设置</h2><span id="ruleSource">默认规则</span></div>
+        <div id="savedRuleSummary" class="saved-summary"></div>
+        <label>习惯名称<input id="ruleName"></label><div class="rule-grid"><label>常用字数<input id="targetChars" type="number" min="2" max="100"></label><label>每条最大字数<input id="maxChars" type="number" min="2" max="100"></label><label>换行参考字数<input id="lineChars" type="number" min="2" max="100"></label><label>最多行数<select id="maxLines"><option value="1">1 行</option><option value="2">2 行</option></select></label></div>
+        <label class="check"><input id="keepPunctuation" type="checkbox">保留标点</label><details class="advanced-rules"><summary>更多设置：停顿与保护词</summary><label>停顿超过多少秒保留分隔<input id="pause" type="number" min="0" max="5" step="0.1"></label><label>不拆开的词组<textarea id="protectedTerms" rows="3" placeholder="每行一个，例如：&#10;人工智能&#10;小津安二郎"></textarea></label><p class="hint">保护词与英文单词不拆开，必要时会超过字数上限。</p></details><div class="rule-actions"><button id="saveRules">保存规则</button><button id="previewRules" class="primary">预览并应用</button><div id="ruleSaveState" role="status"></div></div><p class="hint">保存规则不会改动现有字幕。点击“预览并应用”可先查看变化。</p>
+      </aside></div>
+    </section>
+    <section id="outputsPage" class="page outputs-page" hidden><div class="memory-heading"><div><h1>保存与导出</h1><p>查看导出的实际文件、完整路径和保存时间。</p></div><button id="refreshOutputs">刷新记录</button></div><div class="autosave-info"><div><strong>当前项目自动恢复记录</strong><p id="autosaveLocation"></p><p>用于下次继续编辑；成片需要通过右上角“导出”生成。</p></div><button id="openDataFolder">打开保存目录</button></div><div id="outputList"></div></section>
+    <footer class="statusbar"><span id="status">准备就绪</span><span id="localStatus">素材与个人习惯保存在本机</span></footer>
+  </main>
+</div>
+<div id="jobPanel" class="job-panel" hidden><div><strong id="jobTitle">正在处理</strong><button id="cancelJob">取消任务</button></div><p id="jobMessage"></p><progress id="jobProgress" max="100" value="0"></progress></div>
+<div id="toast" class="toast" role="status" hidden></div>
+<dialog id="modal"><form method="dialog"><div class="modal-heading"><h2 id="modalTitle"></h2><button value="cancel" aria-label="关闭">×</button></div><div id="modalBody"></div><div class="modal-actions"><button value="cancel">取消</button><button id="modalConfirm" value="ok" class="primary">确定</button></div></form></dialog>
+<script src="/assets/app.js"></script>
+<link rel="stylesheet" href="/assets/clarity.css"><script src="/assets/clarity.js"></script>
+<link rel="stylesheet" href="/assets/reference.css"><script src="/assets/reference.js"></script>
+</body></html>
